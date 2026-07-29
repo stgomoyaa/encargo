@@ -16,13 +16,19 @@ The first ran a browser FPS for **286 commits** and left me unhappy with the res
 
 An agent cannot evaluate "want to play another round". So it either declares victory without evidence, or it never stops. Both are expensive. Nothing in the prompt capped iterations either.
 
-The second is shorter and worse:
+The second is the one worth studying, because it did not fail:
 
-> It should be utterly perfect, visually beautiful, with every single thing done at AAA quality. Fan out sub-agents. /loop until it's utterly perfect. Don't stop until each sub-agent is utterly wowed compared with the actual Call of Duty.
+> It should be utterly perfect, visually beautiful, with every single thing done at AAA quality. Fan out sub-agents. /loop until it's utterly perfect. Don't stop until each sub-agent is utterly wowed compared with the actual Call of Duty. It should literally compare them side by side blind and say which one looks better.
 
-Unfalsifiable goal, unbounded fan-out, no ceiling. A browser renderer does not win a blind comparison against Call of Duty, so the exit condition can never be met by construction.
+That prompt produced [Claude of Duty](https://github.com/mshumer/Claude-of-Duty): 55k lines across 11 subsystems, every texture, mesh, animation and sound generated procedurally at load time, 2.2k stars. Genuinely impressive output. An unfalsifiable goal does not prevent good work.
 
-Both prompts fail the same way: **the finish line is taste, and taste cannot close a loop.**
+What it prevents is **the loop ever closing**. Read that repo's own "Honest assessment" section: the stated goal was to match a modern Call of Duty, and it says plainly that it does not, then lists the gaps in hand animation, material realism, character quality, indirect lighting and frame rate. The exit condition, "don't stop until each sub-agent is utterly wowed", was never met. A human stopped it. And the title says "a single prompt" while the README describes three rounds of six-agent passes, which is a human steering, not a prompt terminating.
+
+So the pattern is not "vague prompt, bad output". It is:
+
+> **An unfalsifiable goal outsources the stop decision back to you, at whatever moment you happen to run out of patience or budget.** The work might be great. You just paid to discover where you'd stop.
+
+Both prompts fail the same way: **the finish line is taste, and taste cannot close a loop.** Claude of Duty ends with a written gap and 2.2k stars. My FPS ended with 286 commits and no such paragraph, because I kept iterating against a target instead of shipping and naming the distance to it. Same prompt shape, two very different endings, and the difference was not the prompt.
 
 ## The four leak checks
 
@@ -30,7 +36,7 @@ This is the part you will not find in a prompt-anatomy diagram.
 
 | # | Check | The fix it forces |
 |---|---|---|
-| 1 | Can the agent close the finish line, or does it need your taste? | Split it: what a command can verify, plus an explicit human checkpoint. Taste becomes a scheduled review, never the loop's exit condition. |
+| 1 | Can the agent close the finish line, or does it need your taste? | Split it three ways: what a command can verify, an explicit human checkpoint, and, when the goal is genuinely out of reach, **ship plus a written gap**. "Reach AAA" is not closeable; "ship it and write down exactly how far off it is" is. Taste is never the loop's exit condition. |
 | 2 | Is there a ceiling? | N iterations, N agents, N tokens or wall-clock, **and** what happens on contact: stop and report. |
 | 3 | Is it a task or a roadmap in disguise? | One phase per encargo. The other phases become "do not touch yet" context. |
 | 4 | Does the verifier run on this machine? | A verifier the environment cannot execute is worse than none: the agent silently falls back to what the prompt forbade. Confirm it runs, or convert it to a human checkpoint. |

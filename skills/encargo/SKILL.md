@@ -9,7 +9,7 @@ description: Use when a raw prompt needs rewriting or sharpening, when the user 
 
 A raw prompt is almost always 100% task and 0% of the five other things an agent needs to finish well. This skill turns it into an encargo: the task, plus the resources, the autonomy, the goal, the guardrails, and where the output lands.
 
-The six-part anatomy is the easy half. What actually saves money are the **four leak checks**, derived from two real prompts: one that ran 286 commits on a browser FPS and left its author unhappy, and one that asked for "a first-person shooter at the level of the most recent Call of Duty, /loop until utterly perfect", which cannot terminate by construction.
+The six-part anatomy is the easy half. What actually saves money are the **four leak checks**, derived from two real prompts whose finish lines were taste. One ran 286 commits on a browser FPS and left its author unhappy. The other asked for "a first-person shooter at the level of the most recent Call of Duty, /loop until utterly perfect" and produced [Claude of Duty](https://github.com/mshumer/Claude-of-Duty), 55k lines and 2.2k stars, whose own README states the goal was to match a modern Call of Duty and that it does not. Good output, and the loop still never closed: a human stopped it. An unfalsifiable goal does not ruin the work, it hands the stop decision back to you at whatever moment your patience runs out.
 
 ---
 
@@ -48,7 +48,15 @@ Each one is answered explicitly in the output. They are not optional.
 
 If the terminal criterion is "fun", "wants to play another round", "looks AAA", "utterly perfect", the agent cannot evaluate it, so it will either lie or iterate forever. Both cost money.
 
-Split it in two: what the agent **can** close (a command with expected output, a count, a comparison against a named artifact) and an **explicit human checkpoint** stating exactly what to look at and in what order. Taste is never the loop's exit condition; it is a scheduled checkpoint.
+Split it three ways:
+
+1. What the agent **can** close: a command with expected output, a count, a comparison against a named artifact.
+2. An **explicit human checkpoint**: exactly what to look at, in what order.
+3. When the target is genuinely out of reach, **ship plus a written gap**. "Match a AAA game" is not closeable by anyone. "Ship it, and write down exactly which parts fall short and by how much" is closeable, and it produces something better than an infinite loop: a deliverable plus an honest assessment.
+
+Option 3 is the one people skip, and it is the one that converts an aspirational goal into a finishable one. The alternative is that the goal quietly outsources the stop decision back to the human, who ends up stopping wherever patience or budget runs out. The work may still be good. You just paid to find out where you would stop.
+
+Taste is never the loop's exit condition.
 
 **2 · Is there a ceiling?**
 
