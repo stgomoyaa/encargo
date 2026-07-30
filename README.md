@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/stgomoyaa/encargo/main/assets/repo-banner-encargo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/stgomoyaa/encargo/main/assets/repo-banner-encargo-light.svg">
+    <img width="880" alt="encargo. Rewrite a raw prompt into an assignment an agent can actually finish. Stack: Markdown, Zero deps, 4 leak checks." src="https://raw.githubusercontent.com/stgomoyaa/encargo/main/assets/repo-banner-encargo-light.svg">
+  </picture>
+</p>
+
 # encargo
 
 **A skill that rewrites your prompt into an assignment an agent can actually finish.**
