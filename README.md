@@ -60,7 +60,7 @@ This is the part you will not find in a prompt-anatomy diagram.
 | 5 | **Guardrails** | The quality bar and the named do-not-cross. |
 | 6 | **Output** | Where the result lands, on disk, in what format. |
 
-## Caveman mode
+## Telegraphic mode
 
 An encargo feeding a 12-iteration loop is paid for 12 times. An encargo fanned out to 8 subagents, 8 times. There, prose is money, so the encargo is emitted telegraphic:
 
@@ -75,6 +75,12 @@ OUTPUT  docs/visual-pass/before-after.png + progress.md with the measured number
 ```
 
 Words get compressed. Numbers, paths, commands, verbatim strings, the ceiling, the do-not-cross, and the human/agent split never do.
+
+### This is the mirror of `caveman`, not a copy of it
+
+[caveman](https://github.com/JuliusBrussee/caveman) (MIT, ~94k stars) compresses what the agent **says**, cutting response tokens by roughly 65% while keeping code, commands and error messages byte-for-byte. Telegraphic mode compresses what the agent **is told**.
+
+Those are different token pools, so the two compose rather than compete. An encargo is paid once per re-read: a 12-iteration loop pays for it 12 times whether or not the responses are compressed. Run caveman on the way out and telegraphic on the way in. One concrete reason they are safe together: caveman preserves code blocks verbatim, and an encargo is emitted inside a code block, so it survives caveman intact.
 
 ## Install
 
@@ -105,6 +111,6 @@ It also does not do goal loops. If work must survive several sessions with retri
 
 ## Provenance
 
-The six-section anatomy comes from the ["One Prompt, Dissected"](https://x.com/steipete) infographic, itself a dissection of a QA prompt by Peter Steinberger. The four leak checks, the output contract and caveman mode are original, derived from the two prompts above and their measured results.
+The six-section anatomy comes from the ["One Prompt, Dissected"](https://x.com/steipete) infographic, itself a dissection of a QA prompt by Peter Steinberger. The four leak checks, the output contract and telegraphic mode are original, derived from the two prompts above and their measured results. Telegraphic mode is deliberately not called "caveman mode": [caveman](https://github.com/JuliusBrussee/caveman) is an existing skill that compresses agent responses, and reusing its name for something that compresses assignments would be wrong in both directions.
 
 MIT licensed. Built by [Santiago Moya](https://github.com/stgomoyaa).

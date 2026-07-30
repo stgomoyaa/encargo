@@ -70,7 +70,7 @@ If the encargo contains phase 2, 3, 4 and 5, it is not a task, it is a plan, and
 
 A named verifier the environment cannot execute is worse than none: the agent silently falls back to the very thing the prompt forbade. Before handing over the encargo, confirm the command exists and runs here. Cases that already happened: "verify in a real browser" when pointer lock does not work in automation browsers, and heavy production builds on a 16GB laptop with every MCP server running. If the verifier cannot run, swap it for one that can, or convert it into a human checkpoint under check 1.
 
-## Caveman mode (default when the encargo is re-read many times)
+## Telegraphic mode (default when the encargo is re-read many times)
 
 An encargo that feeds a 12-iteration loop, or 8 parallel subagents, is paid for 12 or 8 times. There, prose is money. In that case emit it **telegraphic**: imperatives, no articles, no copulas, no connective courtesy, one fact per line.
 
@@ -86,7 +86,13 @@ OUTPUT  docs/visual-pass/before-after.png + progress.md with the measured number
 
 **Never compressed:** numbers, paths, commands, verbatim strings, the ceiling, the do-not-cross, and the split between what the agent closes and what the human closes. Compress the words, never the facts.
 
-**Do not use caveman mode** when a human reads the encargo rather than an agent, or when precision needs a subordinate clause. A short ambiguous encargo costs more than a long clear one: the saving is tokens per re-read, not thinking less.
+**Do not use telegraphic mode** when a human reads the encargo rather than an agent, or when precision needs a subordinate clause. A short ambiguous encargo costs more than a long clear one: the saving is tokens per re-read, not thinking less.
+
+### Relationship to `caveman`
+
+[caveman](https://github.com/JuliusBrussee/caveman) (MIT) does the mirror image of this and the two compose rather than compete. It compresses what the agent **says**, cutting response tokens by roughly 65% by dropping conversational padding while keeping code, commands and error messages byte-for-byte. Telegraphic mode compresses what the agent **is told**, which is a different token pool: an encargo is paid once per re-read, so a 12-iteration loop pays for it 12 times whether or not the responses are compressed.
+
+Run both when the work is long: caveman on the way out, telegraphic on the way in. They do not conflict, and there is one concrete reason they are safe together: caveman preserves code blocks verbatim, and an encargo is emitted inside a code block, so an encargo survives caveman intact.
 
 ## Composing with other skills
 
@@ -98,6 +104,7 @@ OUTPUT  docs/visual-pass/before-after.png + progress.md with the measured number
 | A spec or clear requirements already exist | `encargo` directly, then whichever implementation skill applies. |
 | The work must survive sessions, with retries and waits | `encargo` writes it, a durable-goal skill runs the loop. Encargo hands it the goal and the verifier. |
 | The encargo opens a fan-out of agents | `encargo` fixes the count and the ceiling; the parallel-dispatch skill executes. |
+| Responses are the expensive half, not the assignment | That is `caveman`'s job, not this one. See the section above: they compress opposite directions. |
 | There is a bug in the way | Systematic debugging first. An encargo aimed at a misdiagnosed cause is spend pointed at the wrong place. |
 
 It replaces none of them. It hands them work that is already bounded, with a ceiling and a finish line.
@@ -120,4 +127,4 @@ The ones most often forgotten once work is autonomous: the serialization gate be
 
 ## Provenance
 
-The six-section anatomy comes from the "One Prompt, Dissected" infographic, itself a dissection of a QA prompt by Peter Steinberger. The four leak checks, the output contract and caveman mode are original, derived from a real `/loop` prompt and its measured result.
+The six-section anatomy comes from the "One Prompt, Dissected" infographic, itself a dissection of a QA prompt by Peter Steinberger. The four leak checks, the output contract and telegraphic mode are original, derived from a real `/loop` prompt and its measured result. Telegraphic mode is named to avoid colliding with [caveman](https://github.com/JuliusBrussee/caveman), which compresses agent responses rather than assignments; see the section on how they compose.
