@@ -18,7 +18,7 @@
 
 ## Before / After
 
-The raw prompt below is real. It is the one that produced [Claude of Duty](https://github.com/mshumer/Claude-of-Duty): 55k lines across 11 subsystems, 2.2k stars, and its own "Honest assessment" section, which states "the goal was to match a modern Call of Duty" and then, in bold, "It does not."
+The raw prompt below is real. It is the one that produced [Claude of Duty](https://github.com/mshumer/Claude-of-Duty): 55k lines across 11 subsystems, thousands of stars, and its own "Honest assessment" section, which states "the goal was to match a modern Call of Duty" and then, in bold, "It does not."
 
 > It should be utterly perfect, visually beautiful, with every single thing done at AAA quality. Fan out sub-agents. /loop until it's utterly perfect. Don't stop until each sub-agent is utterly wowed compared with the actual Call of Duty. It should literally compare them side by side blind and say which one looks better.
 
@@ -83,13 +83,13 @@ Same six sections, two settings. Prose for a human reading it once, telegraphic 
 | Section | Prose | Telegraphic |
 |---|---|---|
 | Task | Raise the visual bar across five surfaces, the viewmodel, arena lighting, materials, hit impacts and the HUD. | Raise visual bar. 5 surfaces: viewmodel, arena light, materials, impacts, HUD. |
-| Resources | Work in ~/dev/iagame on the feat/visual-pass branch. Reference images live in docs/ref/. Three agents on this. | ~/dev/iagame, branch feat/visual-pass. Refs in docs/ref/. 3 agents. |
-| Autonomy | You choose the technique and the order across the five surfaces. Ceiling: 12 iterations or 3 hours, whichever comes first. On contact with either: stop and report. | You pick technique and order. Ceiling 12 iterations or 3h. On contact: STOP, report. |
+| Resources | Work in ~/dev/iagame on the feat/visual-pass branch. Reference images live in docs/ref/. Three agents, split by file: A takes the viewmodel and impacts, B the arena lighting and materials, C the HUD. No two on one file. | ~/dev/iagame, branch feat/visual-pass. Refs in docs/ref/. 3 agents: A=viewmodel+impacts, B=arena light+materials, C=HUD. No two on one file. |
+| Autonomy | You choose the technique and the order across the five surfaces. Ceiling: 12 iterations or 3 hours, whichever comes first. On contact with either: stop and report, in ten lines or fewer, giving the surface, the measured number and what is left. Stopping means stopping, not announcing. Nothing gets pushed or merged without a human. | You pick technique and order. Ceiling 12 iterations or 3h. On contact: STOP, report <=10 lines: surface, measured number, what is left. Stop means stopped, not announced. No push/merge without a human. |
 | Goal | Closes when all five surfaces show no regression, the build holds 2.5ms combined CPU and GPU cost with 10 bots in a production build, and the test suite is green. Does not close on whether it looks better, that is not something the run can verify. Emit a before and after image at docs/visual-pass/before-after.png and stop. | Closes: 5 surfaces no regression, 2.5ms CPU+GPU with 10 bots prod build, tests green. Does NOT close: whether it looks better. Emit docs/visual-pass/before-after.png and STOP. |
-| Guardrails | Zero per-frame allocations, none. Do not touch anything under src/game/net/. Fix at the source, never patch downstream. | Zero per-frame allocs. Do not touch src/game/net/**. Fix at source, never downstream. |
-| Output | Save the before and after image to docs/visual-pass/before-after.png, and write progress.md with the measured number for each surface. | docs/visual-pass/before-after.png + progress.md with the measured number per surface. |
+| Guardrails | Zero per-frame allocations, none. Do not touch anything under src/game/net/. Fix at the source, never patch downstream. Nothing here is irreversible; undoing the rest is a git revert on the branch. | Zero per-frame allocs. Do not touch src/game/net/**. Fix at source, never downstream. Nothing irreversible here, revert = git revert on branch. |
+| Output | Save the before and after image to docs/visual-pass/before-after.png, and write progress.md with the measured number for each surface. progress.md also carries the ceiling, the goal and the do-not-cross, to be re-read on every iteration. | docs/visual-pass/before-after.png + progress.md with the measured number per surface. progress.md also carries ceiling, goal and do-not-cross, re-read each iteration. |
 
-Same six facts, 172 words against 85, roughly half.
+Same six facts, 230 words against 125, roughly half.
 
 > [!NOTE]
 > Telegraphic pays off on re-reads: a 12-iteration loop reads the encargo 12 times, an 8-way fan-out reads it 8 times. A human reading it once should get prose. A short ambiguous encargo costs more than a long clear one, the saving is tokens per re-read, not thinking less.
@@ -110,8 +110,8 @@ This is the part you will not find in a prompt anatomy diagram.
 
 | # | Check | The real failure it prevents |
 |---|---|---|
-| 1 | Can the agent close the finish line, or does it need your taste? | An unfalsifiable goal ("AAA", "fun", "utterly perfect") makes the agent either lie about being done or iterate forever. Split it three ways: what a command can verify, an explicit human checkpoint, or, when the target is genuinely out of reach, ship plus a written gap. Taste is never the exit condition. |
-| 2 | Is there a ceiling? | Autonomy with no number is spend with no number. N iterations, N agents, N tokens or wall clock, and what happens on contact: stop and report, never keep going anyway. |
+| 1 | Can the agent close the finish line, or does it need your taste? | An unfalsifiable goal ("AAA", "fun", "utterly perfect") makes the agent either lie about being done or iterate forever. Split it three ways: what a command can verify, an explicit human checkpoint, or, when the target is genuinely out of reach, ship plus a written gap. A scored rubric only counts if its levels and reference point were fixed *before* the run — one invented mid-run and aimed at the run's own output is taste with a number stapled on. Taste is never the exit condition. |
+| 2 | Is there a ceiling? | Autonomy with no number is spend with no number. N iterations, N agents, N tokens or wall clock, and what happens on contact: stop and report, never keep going anyway. Two phrasings imitate a ceiling without being one: "keep going until the request is fully resolved" is a single-turn persistence instruction that *removes* the stop condition inside a loop, and a last message promising the next action is an announcement, not a stop. |
 | 3 | Is it a task, or a roadmap in disguise? | Phase 2 through 5 hiding inside phase 1 means the agent picks its own order across a huge space, and nobody sees anything until the end. One phase per encargo. The rest becomes "do not touch yet" context. |
 | 4 | Does the verifier run on this machine? | A verifier the environment cannot execute is worse than none, the agent silently falls back to whatever the prompt forbade. Confirm it runs here, or convert it to a human checkpoint. |
 
@@ -134,18 +134,24 @@ Six sections and four checks are overhead. They earn that overhead back on work 
 3. It sets a ceiling: iterations, agents, tokens or wall clock, and what happens on contact (check 2).
 4. It confirms the ask is one phase, not a roadmap wearing a task's clothes (check 3), and pushes the rest into "do not touch yet."
 5. It confirms the verifier named in the goal actually runs in this environment (check 4), or swaps it for one that does.
-6. It fills the six sections, Task, Resources, Autonomy, Goal, Guardrails, Output, and emits them as one code block.
+6. It fills the six sections, Task, Resources, Autonomy, Goal, Guardrails, Output, and emits them as one code block. On a fan-out that means naming what each agent owns, not just how many there are, and what a returned report looks like.
 7. If the encargo will be re-read many times, a loop, a fan-out, it emits telegraphic instead of prose.
 8. It reports four lines, one per check, plus one line of cost. Nothing else.
 
 ## Relationship to caveman
 
-[caveman](https://github.com/JuliusBrussee/caveman) (MIT, ~94k stars) compresses what the agent **says**: it cuts response tokens by dropping conversational padding while keeping code, commands and error messages byte for byte. Telegraphic mode compresses what the agent **is told**, a different token pool. An encargo is paid once per re-read, a 12-iteration loop pays for it 12 times whether or not the responses are compressed.
+[caveman](https://github.com/JuliusBrussee/caveman) (MIT) compresses what the agent **says**: it cuts response tokens by stripping conversational padding while leaving error text, commands and code untouched. Telegraphic mode compresses what the agent **is told**, a different token pool. An encargo is paid once per re-read, a 12-iteration loop pays for it 12 times whether or not the responses are compressed.
 
-They compose rather than compete: caveman on the way out, telegraphic on the way in. One concrete reason they are safe together: caveman preserves code blocks verbatim, and an encargo is emitted inside a code block, so it survives caveman intact.
+They compose rather than compete: caveman on the way out, telegraphic on the way in. One concrete reason they are safe together: caveman leaves code blocks alone, and an encargo is emitted inside a code block, so it survives caveman intact.
+
+[ponytail](https://github.com/DietrichGebert/ponytail) (MIT) sits on a third axis: it bounds what gets *built*. Nothing to compose there, just a place to point at — if it is installed, name its ladder in Guardrails like any other project rule.
 
 ## Provenance and license
 
 The six-section anatomy comes from the ["One Prompt, Dissected"](https://x.com/steipete) infographic, itself a dissection of a QA prompt by Peter Steinberger. The four leak checks, the output contract and telegraphic mode are original, derived from the two prompts above and their measured results. Telegraphic mode is deliberately not called "caveman mode": caveman is an existing skill that compresses agent responses, and reusing its name for something that compresses assignments would be wrong in both directions.
+
+A later revision read published prompting and context-engineering guidance from Anthropic and OpenAI, plus neighbouring open-source skills, and took **mechanisms, never text**. What survived: sub-agent scoping and the argument that a padded assignment is followed worse, not merely priced higher; grading criteria that have to be fixed before a run to count; an explicit reversibility line. What did not: anything about constructing an API call, anything naming a model generation, and persona and prompt-library material, which is a different genre this skill deliberately is not. One phrase here previously echoed caveman's own tagline too closely and was rewritten. Nothing is reproduced verbatim from any source.
+
+Every addition was checked against a baseline run of the skill on four prompts, and guidance the baseline already satisfied was dropped rather than added. That is why there are still four checks and not six.
 
 MIT licensed. Built by [Santiago Moya](https://github.com/stgomoyaa), who ran out of patience at commit 286 and wrote this instead.
