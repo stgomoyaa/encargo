@@ -41,6 +41,41 @@ OUTPUT  /build, plus GAP.md with the named shortfalls, not a score.
 
 The rewrite is more than double the length. That is not this tool being verbose, it is the five sections the raw prompt never had, made explicit. That is the honest cost, and it runs the other way from what you might expect.
 
+### "So just write a better prompt"
+
+Fair objection to the example above, which is sloppy. So here is a well-written one, and it fails anyway.
+
+A real prompt asking for a single-file WebGL shooter opens with six numbered requirement sections — lighting engine, PBR materials, a post-processing stack, architecture, physics and destruction, particle systems — names its CDN dependencies, forbids external assets, and explicitly bans `// TODO` comments and placeholder markup. It is specific, technical and disciplined. It still fails three of the four checks:
+
+| Check | What fires |
+|---|---|
+| 3 · roadmap in disguise | Seven subsystems wearing one task's clothes. The agent picks its own order across all of them and nobody sees anything until the end. |
+| 4 · verifier runs here | It requires PointerLockControls. Pointer lock does not engage under headless automation, so nothing in the run can confirm the thing works. |
+| 1 · taste as the finish line | "Hyper-realistic", "gritty", "high-detail". The one real number, 60fps, has nothing measuring it. |
+
+There is also an unnamed ceiling: "no truncation, no placeholders" runs straight into a finite output budget, and the prompt never acknowledges the collision.
+
+```
+TASK  Phase 1 only: one .html, Three.js scene, PointerLock FPS controller, one room,
+      procedural PBR materials. Phases 2-5 are listed below and do not start.
+RESOURCES  Three.js r128 + PointerLockControls from CDN. No asset files, no external
+           textures. NOT this phase: post-processing, physics/destruction, particles,
+           viewmodel, multi-level architecture.
+AUTONOMY  You pick geometry and shader technique. The real ceiling is the output budget:
+          if phase 1 will not fit complete in one response, STOP and report what to cut.
+          Never truncate, never emit a TODO.
+GOAL  Closes: opens in Chrome with 0 console errors, pointer lock engages on click, WASD
+      moves the camera, holds 60fps with the scene loaded.
+      Human checkpoint, not agent-closable: pointer lock does not engage under headless
+      automation, so a person opens the file and checks lock, then movement, then fps.
+      Does NOT close: "hyper-realistic", "AAA", "gritty". Ship it, then write GAP.md
+      naming where it falls short and by how much.
+GUARDRAILS  Single file. No dependency beyond those two CDN scripts. No placeholder markup.
+OUTPUT  scene.html + GAP.md. Phases 2-5 go in ROADMAP.md, unstarted.
+```
+
+521 words in, 175 out. This rewrite is a third of the length of the prompt it replaces, because specificity was never the missing ingredient — a finish line and one phase were. A detailed prompt and a finishable one are different things, and the first does not imply the second.
+
 ## What it doesn't do
 
 `encargo` does not make the work better. It does not touch code, design or quality, and it cannot rescue a misdiagnosed problem. What it does is make the assignment finishable, and it explicitly refuses to inflate small work.
@@ -51,7 +86,7 @@ The rewrite is more than double the length. That is not this tool being verbose,
 | Rescues a misdiagnosed problem | No. |
 | Inflates a one-line fix into six sections | No, on purpose. It refuses. |
 | Makes the assignment finishable | Yes. That is the whole job. |
-| Prompt length on autonomous work | Grows. 53 words became 111 above. That growth is the six sections doing their job, not overhead to apologize for. |
+| Prompt length on autonomous work | Goes either way. A thin prompt grows (53 words to 111); an over-scoped one shrinks (521 to 175). It moves toward one bounded phase, not toward a word count. |
 | Prompt length on small work | Unchanged. Check 3 catches it before a single section gets added. |
 
 > Not a prompt library, not a template, not a wrapper that pads prompts to look thorough. A contract with four checks, and the four checks are what decide whether the prompt needed expanding at all.

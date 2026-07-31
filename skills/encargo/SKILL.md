@@ -128,6 +128,8 @@ Project-wide rules live in your instructions file, not here. This skill **pulls 
 
 Most often forgotten once work is autonomous: the serialization gate before push, merge or deploy; backgrounding anything that waits, since foreground calls die on a timeout; and not spinning up heavy servers or browsers on a memory-constrained machine.
 
+The test for whether a rule belongs: **name the specific failure it prevents on this task**. If you cannot, it is not load-bearing here and it is costing attention that the ceiling and the do-not-cross need. Rules written to stop an older model doing something dumb are the usual dead weight — they survive long after the behaviour they were guarding against.
+
 ## Common mistakes
 
 | Mistake | Fix |
