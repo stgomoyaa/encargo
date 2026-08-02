@@ -59,6 +59,8 @@ Split it three ways:
 
 Option 3 is the one people skip, and the one that turns an aspirational goal into a finishable one. Otherwise the goal outsources the stop decision back to you, and you stop wherever patience runs out. The work may still be good — you just paid to find out where you would stop.
 
+A harsh critic is the best way to produce that gap list and the worst way to decide when to stop: same machinery, two different jobs. Keep it — pointed at the rendered output rather than the code, and never the agent that built the thing, it finds defects no code review does. Just never make "the critic went quiet" the exit condition. A critic instructed to be harsh will not go quiet, and a loop that waits for it to run dry is a deadlock dressed as rigour.
+
 Taste is never the loop's exit condition.
 
 **2 · Is there a ceiling?**
@@ -76,6 +78,10 @@ If the encargo contains phase 2, 3, 4 and 5, it is not a task, it is a plan, and
 **4 · Does the verifier run on this machine?**
 
 A named verifier the environment cannot execute is worse than none: the agent silently falls back to the very thing the prompt forbade. Confirm the command exists and runs here before handing the encargo over. Real cases: "verify in a real browser" when pointer lock does not work under automation; heavy production builds on a 16GB laptop with every MCP server running. If it cannot run, swap it for one that can, or make it a human checkpoint under check 1.
+
+Then put it **first in the encargo, as its own step**, not as a clause somewhere inside one. A verifier confirmed on line four is confirmed after the agent has already started. Where it has to be built — a capture harness, a fixture, a baseline measurement — building it is step zero, before any of the work it judges, because a harness written afterwards gets shaped to agree with what already exists.
+
+One goal often needs two verifiers in two environments, and that is the case most often missed: a headless capture can tell you a frame looks right and can tell you nothing about whether it holds 60fps on the machine you play it on. Name both, or say plainly which half nothing is checking.
 
 ## Telegraphic mode (default when the encargo is re-read many times)
 
